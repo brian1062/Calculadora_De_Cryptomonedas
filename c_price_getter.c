@@ -19,9 +19,10 @@ int main(){
     int fd;
     char buf[1024];
     char coin[1024];
+    ssize_t num_bytes;
 
     umask(0);
-    if(mkfifo(FIFO_NAME, S_IRUSR | S_IWUSR | S_IWGRP) == -1){
+    if(mkfifo(FIFO_NAME, 0666) == -1){
         perror("While creating FIFO");
         exit(1);
     }
@@ -33,6 +34,7 @@ Ethereum or 'BTC' for Bitcoin\n");
 
     strcpy(coin, buf);
 
+    //fd = open(FIFO_NAME, O_WRONLY);
     fd = open(FIFO_NAME, O_RDWR);
     if (fd == -1){
         perror("\nWhile opening the FIFO for reading\n");
@@ -41,12 +43,26 @@ Ethereum or 'BTC' for Bitcoin\n");
     if(write(fd, &buf, sizeof(buf)) == -1)
         perror("\nWhile trying to write to the FIFO\n");
 
-    sleep(60);
-
-    if(read(fd, &buf, sizeof(buf)) != -1){
-        printf("\nThe price of %s is: %s\n", coin, buf);
+    int i = 0;
+    while (i < 2) {
+        num_bytes = read(fd, buf, sizeof(buf));
+        if (num_bytes == -1) {
+            perror("read");
+            exit(EXIT_FAILURE);
+        }
+        if (num_bytes == 0) {
+            printf("End of file\n");
+            break;
+        }
+        // convert binary data to human-readable text
+        buf[num_bytes] = '\0';
+        i++;
     }
+    printf("Received message: %s\n", buf);
 
+
+    close(fd);
+    unlink(FIFO_NAME);
 
     return 0;
 }
