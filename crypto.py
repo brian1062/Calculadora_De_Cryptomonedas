@@ -1,6 +1,8 @@
 import requests
 import time
 
+FIFO_NAME  = "/tmp/fifo_crypto"
+
 headers = {
         'X-CMC_PRO_API_KEY': 'c34b5ad5-c1ab-4952-9805-38eca2a5ccc3',
         'Accepts': 'application/json'
@@ -24,7 +26,7 @@ def get_currency_price (currency):
     for coin in coins:
         if coin['symbol'] == currency:
             return str(round(coin['quote']['USD']['price'],2))
-        
+
 precio = get_currency_price('BTC')
 print(precio)
 precio = get_currency_price('ETH')
