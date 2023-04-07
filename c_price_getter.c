@@ -6,6 +6,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+extern __uint32_t convert(__uint32_t a,__uint32_t b);
+
 #define FIFO_NAME "/tmp/fifo_crypto"
 
 void signal_handler(int signal){
@@ -15,6 +17,7 @@ void signal_handler(int signal){
 }
 
 int main(){
+    //asm("include converter.asm");
     signal(SIGINT, signal_handler);
     int fd;
     char buf[1024];
@@ -32,6 +35,7 @@ Ethereum or 'BTC' for Bitcoin\n");
     if(fgets(buf, sizeof(buf), stdin) == NULL)
         printf("\nEither an error occured or you entered an empty value\n");
 
+    buf[3] = '\0';
     strcpy(coin, buf);
 
     //fd = open(FIFO_NAME, O_WRONLY);
@@ -60,6 +64,23 @@ Ethereum or 'BTC' for Bitcoin\n");
     }
     printf("Received message: %s\n", buf);
 
+    __uint32_t USD_ARS = 392;
+   // __uint32_t USD_EUR = 0.90;
+    __uint32_t USD_EUR = 1;
+
+    __uint32_t AUX = strtoul(buf, NULL, 10);
+
+    __uint32_t A_PESO;
+    __uint32_t A_EURO;
+
+    A_PESO = convert(AUX,USD_ARS);
+
+    AUX = strtoul(buf, NULL, 10);
+
+    A_EURO = convert(AUX,USD_EUR);
+
+    printf("El valor de %s es %d ARS.\n", coin, A_PESO);
+    printf("El valor de %s es %d EUR.\n", coin, A_EURO);
 
     close(fd);
     unlink(FIFO_NAME);
