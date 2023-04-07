@@ -35,6 +35,7 @@ Ethereum or 'BTC' for Bitcoin\n");
     if(fgets(buf, sizeof(buf), stdin) == NULL)
         printf("\nEither an error occured or you entered an empty value\n");
 
+    buf[3] = '\0';
     strcpy(coin, buf);
 
     //fd = open(FIFO_NAME, O_WRONLY);
@@ -64,7 +65,8 @@ Ethereum or 'BTC' for Bitcoin\n");
     printf("Received message: %s\n", buf);
 
     __uint32_t USD_ARS = 392;
-    __uint32_t USD_EUR = 0.90;
+   // __uint32_t USD_EUR = 0.90;
+    __uint32_t USD_EUR = 1;
 
     __uint32_t AUX = strtoul(buf, NULL, 10);
 
@@ -77,8 +79,8 @@ Ethereum or 'BTC' for Bitcoin\n");
 
     A_EURO = convert(AUX,USD_EUR);
 
-    printf("El valor de %s es %d ARS",coin,A_PESO);
-    printf("El valor de %s es %d ARS",coin,A_EURO);
+    printf("El valor de %s es %d ARS.\n", coin, A_PESO);
+    printf("El valor de %s es %d EUR.\n", coin, A_EURO);
 
     close(fd);
     unlink(FIFO_NAME);
