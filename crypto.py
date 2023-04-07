@@ -1,7 +1,7 @@
 import requests
 import os
 
-FIFO_NAME  = './fifo_crypto'
+FIFO_NAME  = '/tmp/fifo_crypto'
 
 #Esta puesto el API KEY "OJO"
 headers = {
@@ -20,14 +20,14 @@ URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
 
 json = requests.get(URL, params = params, headers = headers).json()
 
-coins =  json['data']
+coins = json['data']
 
 #TIENEN QUE SER VALORES COMO 'ETH', 'BTC'
 def get_currency_price (currency):
     for coin in coins:
         if coin['symbol'] == currency:
             return str(round(coin['quote']['USD']['price'],2))
-     
+
 def parse_data(data):
     data = data.decode('utf-8')
     return data[:3]
@@ -41,5 +41,6 @@ print(fifo_read)
 PRICE = get_currency_price(fifo_read)
 print(PRICE)
 PRICE= PRICE.encode('utf-8')
+print("Price after encoding: ", PRICE)
 os.write(fifo, PRICE)
 #os.close(fifo)
