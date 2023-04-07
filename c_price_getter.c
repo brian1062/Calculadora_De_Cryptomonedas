@@ -47,6 +47,5 @@ Ethereum or 'BTC' for Bitcoin\n");
         printf("\nThe price of %s is: %s\n", coin, buf);
     }
 
-
     return 0;
 }

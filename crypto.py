@@ -1,5 +1,7 @@
+import os
 import requests
-import time
+#import time
+
 
 FIFO_NAME  = "/tmp/fifo_crypto"
 
@@ -10,14 +12,15 @@ headers = {
 
 params = {
         'start': '1',
-        'limit': '1',
+        'limit': '2',
         'convert': 'USD'
         }
+
 #USD, ARS, EUR
 
-url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
+URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
 
-json = requests.get(url, params = params, headers = headers).json()
+json = requests.get(URL, params = params, headers = headers).json()
 
 coins =  json['data']
 
@@ -27,7 +30,13 @@ def get_currency_price (currency):
         if coin['symbol'] == currency:
             return str(round(coin['quote']['USD']['price'],2))
 
-precio = get_currency_price('BTC')
-print(precio)
-precio = get_currency_price('ETH')
-print(precio)
+PRECIO = get_currency_price('BTC')
+print("Precio de Bitcoin", PRECIO)
+PRECIO = get_currency_price('ETH')
+print("Precio de Ethereum", PRECIO)
+
+## ! FIFO
+
+fifo = os.open(FIFO_NAME, os.O_RDWR)
+PRICE = get_currency_price(os.read(fifo, 1024))
+os.write(fifo, PRICE)
