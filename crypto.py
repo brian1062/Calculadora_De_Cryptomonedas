@@ -26,7 +26,7 @@ coins =  json['data']
 def get_currency_price (currency):
     for coin in coins:
         if coin['symbol'] == currency:
-            return float(round(coin['quote']['USD']['price'],2))
+            return str(round(coin['quote']['USD']['price'],2))
      
 def parse_data(data):
     data = data.decode('utf-8')
@@ -38,7 +38,8 @@ fifo = os.open(FIFO_NAME, os.O_RDWR)
 fifo_read= os.read(fifo, 16)
 fifo_read = parse_data(fifo_read)
 print(fifo_read)
-fifo_read = get_currency_price(fifo_read)
-print(fifo_read)
-#os.write(fifo, PRICE)
+PRICE = get_currency_price(fifo_read)
+print(PRICE)
+PRICE= PRICE.encode('utf-8')
+os.write(fifo, PRICE)
 #os.close(fifo)
