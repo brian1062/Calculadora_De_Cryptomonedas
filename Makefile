@@ -11,3 +11,10 @@ clean:
 	rm main
 	rm *.o
 
+.PHONY: remove
+
+remove :
+	cd /tmp; \
+	pwd; \
+	rm fifo_crypto
+
