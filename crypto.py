@@ -4,10 +4,12 @@ import signal
 
 FIFO_NAME  = '/tmp/fifo_crypto'
 
+# ! FIFO
 if not os.path.exists(FIFO_NAME):
     os.mkfifo(FIFO_NAME)
 
 fifo = os.open(FIFO_NAME, os.O_RDWR)
+# !
 
 # ! Signal handling
 def signal_handler(signal, frame):
@@ -48,21 +50,7 @@ def parse_data(data):
     data = data.decode('utf-8')
     return data[:3]
 
-## ! FIFO
-
-""" if not os.path.exists(FIFO_NAME):
-    os.mkfifo(FIFO_NAME)
-
-fifo = os.open(FIFO_NAME, os.O_RDWR)
-
-# ! Signal handling
-def signal_handler(signal, frame):
-    print("\nThe SIGINT signal was received\n")
-    os.close(fifo)
-    exit(0)
-signal.signal(signal.SIGINT, signal_handler)
-# ! """
-
+# ! FIFO
 fifo_read= os.read(fifo, 16)
 fifo_read = parse_data(fifo_read)
 print("Currency wanted: ", fifo_read)
@@ -71,4 +59,5 @@ print("Currency price: ", PRICE)
 PRICE= PRICE.encode('utf-8')
 print("Price after encoding: ", PRICE)
 os.write(fifo, PRICE)
-#os.close(fifo)
+os.unlink(FIFO_NAME)
+# !
