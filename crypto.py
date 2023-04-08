@@ -1,7 +1,23 @@
 import requests
 import os
+import signal
 
 FIFO_NAME  = '/tmp/fifo_crypto'
+
+if not os.path.exists(FIFO_NAME):
+    os.mkfifo(FIFO_NAME)
+
+fifo = os.open(FIFO_NAME, os.O_RDWR)
+
+# ! Signal handling
+def signal_handler(signal, frame):
+    os.close(fifo)
+    os.unlink(FIFO_NAME)
+    print("\nThe SIGINT signal was received\n")
+    exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
+# !
 
 #Esta puesto el API KEY "OJO"
 headers = {
@@ -34,12 +50,24 @@ def parse_data(data):
 
 ## ! FIFO
 
+""" if not os.path.exists(FIFO_NAME):
+    os.mkfifo(FIFO_NAME)
+
 fifo = os.open(FIFO_NAME, os.O_RDWR)
+
+# ! Signal handling
+def signal_handler(signal, frame):
+    print("\nThe SIGINT signal was received\n")
+    os.close(fifo)
+    exit(0)
+signal.signal(signal.SIGINT, signal_handler)
+# ! """
+
 fifo_read= os.read(fifo, 16)
 fifo_read = parse_data(fifo_read)
-print(fifo_read)
+print("Currency wanted: ", fifo_read)
 PRICE = get_currency_price(fifo_read)
-print(PRICE)
+print("Currency price: ", PRICE)
 PRICE= PRICE.encode('utf-8')
 print("Price after encoding: ", PRICE)
 os.write(fifo, PRICE)

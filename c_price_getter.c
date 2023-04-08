@@ -11,7 +11,7 @@ extern __uint32_t convert(__uint32_t a,__uint32_t b);
 #define FIFO_NAME "/tmp/fifo_crypto"
 
 void signal_handler(int signal){
-    printf("\nSIGINT detected\n");
+    printf("\nThe SIGINT signal was received\n");
     unlink(FIFO_NAME);
     exit(signal);
 }
@@ -25,9 +25,14 @@ int main(){
     ssize_t num_bytes;
 
     umask(0);
-    if(mkfifo(FIFO_NAME, 0666) == -1){
+
+    // Verificar si la FIFO existe
+    if (access(FIFO_NAME, F_OK) == -1) {
+        // Si no existe, crear la FIFO
+        if(mkfifo(FIFO_NAME, 0666) == -1){
         perror("While creating FIFO");
         exit(1);
+        }
     }
 
     printf("\nWhich crypto's price do you want? Write 'ETH' for \
