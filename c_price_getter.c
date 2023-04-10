@@ -41,19 +41,26 @@ Ethereum or 'BTC' for Bitcoin\n");
         printf("\nEither an error occured or you entered an empty value\n");
 
     buf[3] = '\0';
+    /*if((strcmp(buf, "ETH") == 0 )){
+        printf("\nEl string ingresado no es correcto.\n%s",buf);
+        exit(EXIT_FAILURE); 
+    }*/
+    //printf("%s", buf);
     strcpy(coin, buf);
 
     //fd = open(FIFO_NAME, O_WRONLY);
-    fd = open(FIFO_NAME, O_RDWR);
+    fd = open(FIFO_NAME, O_WRONLY);
     if (fd == -1){
         perror("\nWhile opening the FIFO for reading\n");
         exit(1);
     }
     if(write(fd, &buf, sizeof(buf)) == -1)
         perror("\nWhile trying to write to the FIFO\n");
-
+    sleep(2);
+    close(fd);
+    fd = open(FIFO_NAME, O_RDONLY);
     int i = 0;
-    while (i < 2) {
+    while (1) {
         num_bytes = read(fd, buf, sizeof(buf));
         if (num_bytes == -1) {
             perror("read");
@@ -63,11 +70,14 @@ Ethereum or 'BTC' for Bitcoin\n");
             printf("End of file\n");
             break;
         }
-        // convert binary data to human-readable text
-        buf[num_bytes] = '\0';
+        if(num_bytes>0){
+            printf("Received message: %s\n", buf);
+            buf[num_bytes] = '\0';
+        }
         i++;
     }
-    printf("Received message: %s\n", buf);
+    //buf[i]= '\0';
+    //printf("Received message: %s\n", buf);
 
     __uint32_t USD_ARS = 392;
    // __uint32_t USD_EUR = 0.90;
