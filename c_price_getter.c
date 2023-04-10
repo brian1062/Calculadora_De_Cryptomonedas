@@ -40,7 +40,15 @@ Ethereum or 'BTC' for Bitcoin\n");
     if(fgets(buf, sizeof(buf), stdin) == NULL)
         printf("\nEither an error occured or you entered an empty value\n");
 
-    buf[3] = '\0';
+    int i=0;
+    while (1) {   
+        if(strcmp(&buf[i], "\n")== 0){
+            buf[i] = '\0';
+            break;
+        }
+        i++;
+    }
+    
     /*if((strcmp(buf, "ETH") == 0 )){
         printf("\nEl string ingresado no es correcto.\n%s",buf);
         exit(EXIT_FAILURE); 
@@ -56,10 +64,10 @@ Ethereum or 'BTC' for Bitcoin\n");
     }
     if(write(fd, &buf, sizeof(buf)) == -1)
         perror("\nWhile trying to write to the FIFO\n");
-    sleep(2);
+    sleep(1);
     close(fd);
     fd = open(FIFO_NAME, O_RDONLY);
-    int i = 0;
+    i = 0;
     while (1) {
         num_bytes = read(fd, buf, sizeof(buf));
         if (num_bytes == -1) {

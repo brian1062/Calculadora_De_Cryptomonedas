@@ -50,7 +50,11 @@ def get_currency_price (currency):
 
 def parse_data(data):
     data = data.decode('utf-8')
-    return data[:3]
+    null_index = data.find('\0')
+    if null_index != -1:
+        return data[:null_index]
+    else:
+        return data
 
 # ! FIFO
 fifo_read= os.read(fifo, 16)
@@ -61,7 +65,7 @@ print("Currency price:", PRICE)
 PRICE= PRICE.encode('utf-8')
 print("Price after encoding: ", PRICE)
 os.close(fifo)
-time.sleep(2)
+time.sleep(1)
 os.open(FIFO_NAME, os.O_WRONLY)
 os.write(fifo, PRICE)
 #os.unlink(FIFO_NAME)
