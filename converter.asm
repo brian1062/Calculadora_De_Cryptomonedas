@@ -5,13 +5,13 @@ segment .text
 convert:
 ; Argumento: número a multiplicar en el registro EAX
         enter   0,0
-        ;push    ebx                ; Por la convencion de C hay que mantener intacto ebx
+        ;push    ebp                ; Por la convencion de C hay que mantener intacto ebx
 
-        fld     dword [ebp+8]      ; Carga un float_32 en la pila de la FPU desde la direccion apuntada por ebp mas ocho bits
-        fld     dword [ebp+12]     ; Carga el un float_32 en la pila de la FPU desde la direccion apuntada por ebp mas doce bits
-        fmul    st1, st0           ;
-        fstp    dword [ebp+8]
+        fld     qword [ebp+8]      ; Carga un float_32 en la pila de la FPU desde la direccion apuntada por ebp mas ocho bits
+        fld     qword [ebp+16]     ; Carga el un float_32 en la pila de la FPU desde la direccion apuntada por ebp mas doce bits
+        fmul    st1, st0           ; st1= st1*st0
+        fstp    qword [ebp+8]
 
-        ;pop     ebx               ; volvemos ebx
+        ;pop     ebp               ; volvemos ebx
         leave
         ret
