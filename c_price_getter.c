@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-extern __uint32_t convert(__uint32_t a,__uint32_t b);
+extern float convert(float a,float b);
 
 #define FIFO_NAME "/tmp/fifo_crypto"
 
@@ -79,14 +79,15 @@ Ethereum or 'BTC' for Bitcoin\n");
         i++;
     }
 
-    __uint32_t USD_ARS = 392;
-   // __uint32_t USD_EUR = 0.90;
-    __uint32_t USD_EUR = 1;
+    float USD_ARS = 392;
+    float USD_EUR = 0.90;
+    //float USD_EUR = 1;
+    char *endptr;
 
-    __uint32_t AUX = strtoul(buf, NULL, 10);
+    float AUX = strtof(buf, &endptr);
 
-    __uint32_t A_PESO;
-    __uint32_t A_EURO;
+    float A_PESO;
+    float A_EURO;
 
     A_PESO = convert(AUX,USD_ARS);
 
@@ -94,8 +95,8 @@ Ethereum or 'BTC' for Bitcoin\n");
 
     A_EURO = convert(AUX,USD_EUR);
 
-    printf("Price of %s is %d ARS.\n", coin, A_PESO);
-    printf("Price of %s is %d EUR.\n", coin, A_EURO);
+    printf("Price of %s is %f ARS.\n", coin, A_PESO);
+    printf("Price of %s is %f EUR.\n", coin, A_EURO);
 
     close(fd);
     unlink(FIFO_NAME);

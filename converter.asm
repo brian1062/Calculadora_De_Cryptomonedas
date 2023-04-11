@@ -6,9 +6,12 @@ convert:
 ; Argumento: número a multiplicar en el registro EAX
         enter   0,0 
         push    ebx               ; Por la convencion de C hay que mantener intacto ebx
+       
 
-        mov     eax,[ebp+8]       ; eax = moneda_fuente
-        mul     dword [ebp+12]    ; edx:eax = eax * moneda_destino
+        fld     dword [ebp+8]
+        fld     dword [ebp+12]
+        fmul    st1, st0
+        fstp    dword [ebp+8]
 
         pop     ebx               ; volvemos ebx
         leave
