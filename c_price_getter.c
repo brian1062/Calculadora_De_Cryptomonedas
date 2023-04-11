@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-extern __uint32_t convert(__uint32_t a,__uint32_t b);
+extern float convert(float a,float b);
 
 #define FIFO_NAME "/tmp/fifo_crypto"
 
@@ -40,43 +40,54 @@ Ethereum or 'BTC' for Bitcoin\n");
     if(fgets(buf, sizeof(buf), stdin) == NULL)
         printf("\nEither an error occured or you entered an empty value\n");
 
-    buf[3] = '\0';
+    int i=0;
+    while (1) {   
+        if(strcmp(&buf[i], "\n")== 0){
+            buf[i] = '\0';
+            break;
+        }
+        i++;
+    }
     strcpy(coin, buf);
 
-    //fd = open(FIFO_NAME, O_WRONLY);
-    fd = open(FIFO_NAME, O_RDWR);
+    fd = open(FIFO_NAME, O_WRONLY);
     if (fd == -1){
         perror("\nWhile opening the FIFO for reading\n");
         exit(1);
     }
     if(write(fd, &buf, sizeof(buf)) == -1)
         perror("\nWhile trying to write to the FIFO\n");
-
-    int i = 0;
-    while (i < 2) {
+    sleep(1);
+    close(fd);
+    fd = open(FIFO_NAME, O_RDONLY);
+    i = 0;
+    while (1) {
         num_bytes = read(fd, buf, sizeof(buf));
         if (num_bytes == -1) {
             perror("read");
             exit(EXIT_FAILURE);
         }
+        if(num_bytes>0){
+            printf("Received message: Price of %s is %s USD.\n", coin, buf);
+            buf[num_bytes] = '\0';
+        }
+        //Final de la lectura
         if (num_bytes == 0) {
-            printf("End of file\n");
             break;
         }
-        // convert binary data to human-readable text
-        buf[num_bytes] = '\0';
+
         i++;
     }
-    printf("Received message: %s\n", buf);
 
-    __uint32_t USD_ARS = 392;
-   // __uint32_t USD_EUR = 0.90;
-    __uint32_t USD_EUR = 1;
+    float USD_ARS = 392;
+    float USD_EUR = 0.90;
+    //float USD_EUR = 1;
+    char *endptr;
 
-    __uint32_t AUX = strtoul(buf, NULL, 10);
+    float AUX = strtof(buf, &endptr);
 
-    __uint32_t A_PESO;
-    __uint32_t A_EURO;
+    float A_PESO;
+    float A_EURO;
 
     A_PESO = convert(AUX,USD_ARS);
 
@@ -84,8 +95,8 @@ Ethereum or 'BTC' for Bitcoin\n");
 
     A_EURO = convert(AUX,USD_EUR);
 
-    printf("El valor de %s es %d ARS.\n", coin, A_PESO);
-    printf("El valor de %s es %d EUR.\n", coin, A_EURO);
+    printf("Price of %s is %f ARS.\n", coin, A_PESO);
+    printf("Price of %s is %f EUR.\n", coin, A_EURO);
 
     close(fd);
     unlink(FIFO_NAME);

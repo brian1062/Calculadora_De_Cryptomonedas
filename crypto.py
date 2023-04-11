@@ -1,14 +1,16 @@
 import requests
 import os
 import signal
+import time
 
 FIFO_NAME  = '/tmp/fifo_crypto'
+FIFO_REQUEST = '/tmp/fifo_request'
 
 # ! FIFO
 if not os.path.exists(FIFO_NAME):
     os.mkfifo(FIFO_NAME)
 
-fifo = os.open(FIFO_NAME, os.O_RDWR)
+fifo = os.open(FIFO_NAME, os.O_RDONLY)
 # !
 
 # ! Signal handling
@@ -29,7 +31,7 @@ headers = {
 
 params = {
         'start': '1',
-        'limit': '2',
+        'limit': '10',
         'convert': 'USD'
         }
 #USD, ARS, EUR
@@ -48,16 +50,23 @@ def get_currency_price (currency):
 
 def parse_data(data):
     data = data.decode('utf-8')
-    return data[:3]
+    null_index = data.find('\0')
+    if null_index != -1:
+        return data[:null_index]
+    else:
+        return data
 
 # ! FIFO
 fifo_read= os.read(fifo, 16)
 fifo_read = parse_data(fifo_read)
-print("Currency wanted: ", fifo_read)
+print("Currency wanted:", fifo_read)
 PRICE = get_currency_price(fifo_read)
-print("Currency price: ", PRICE)
+print("Currency price:", PRICE , "USD.")
 PRICE= PRICE.encode('utf-8')
 print("Price after encoding: ", PRICE)
+os.close(fifo)
+time.sleep(1)
+os.open(FIFO_NAME, os.O_WRONLY)
 os.write(fifo, PRICE)
-os.unlink(FIFO_NAME)
+#os.unlink(FIFO_NAME)
 # !
