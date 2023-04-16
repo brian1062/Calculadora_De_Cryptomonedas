@@ -5,7 +5,7 @@ c_price_getter.o: c_price_getter.c
 	gcc -g -c -m32 c_price_getter.c
 
 converter.o: converter.asm
-	nasm -f elf converter.asm -o converter.o
+	nasm -f elf -g converter.asm -o converter.o
 
 clean:
 	rm main
