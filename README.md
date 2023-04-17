@@ -1,7 +1,9 @@
 
+
 # Calculadora de Criptomonedas
 
 Este proyecto es una calculadora de criptomonedas que permite convertir el valor de una criptomoneda a otra utilizando una API REST. El proyecto está escrito en lenguaje C y Python.
+[Presentacion](https://docs.google.com/presentation/d/1r7xv7Jz9xSBwO4W7NpnOmjwHPNZXW06ScLB5h36pCPw/edit?usp=share_link).
 
 ## Compilación
 
